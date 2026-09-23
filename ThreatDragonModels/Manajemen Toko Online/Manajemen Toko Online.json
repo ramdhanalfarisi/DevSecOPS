@@ -3,274 +3,1744 @@
   "release_version": "1.0",
   "released_at": "2026-09-23",
   "summary": {
-    "title": "Threat Model Aplikasi Toko Online",
-    "owner": "Ramdhan Alfarisi, Tengku Erlangga, Hilmi, Bagas, Rahel Siburian",
-    "description": "SECURITY REQUIREMENTS:\n1. Authentication & Authorization: Implementasi JWT dengan signature validation dan Multi-Factor Authentication (MFA) untuk Admin.\n2. Data Protection: Enkripsi data sensitif at-rest (MySQL) dan in-transit (HTTPS/TLS 1.3).\n3. Input Validation: Validasi dan sanitasi ketat di Node.js REST API untuk mencegah SQL Injection dan XSS.\n4. Audit Logging: Logging immutable/read-only untuk transaksi pembayaran dan aktivitas admin.\n5. Rate Limiting: Penerapan rate limiting di API Gateway/REST API untuk mencegah serangan DoS/Brute-Force.",
-    "id": 1
+    "title": "Threat Model - Aplikasi Manajemen Toko Online Startup",
+    "owner": "Kelompok Ramdhan Alfarisi",
+    "description": "Threat model untuk aplikasi manajemen toko online (React Frontend, Node.js REST API, MySQL, Redis, integrasi Payment Gateway Midtrans/Xendit, dan Email Service). Dibuat sebagai tugas kelompok mata kuliah keamanan aplikasi (studi kasus STRIDE/DFD).",
+    "id": 0
   },
   "detail": {
     "contributors": [
-      { "name": "Ramdhan Alfarisi" },
-      { "name": "Tengku Erlangga" },
-      { "name": "Hilmi" },
-      { "name": "Bagas" },
-      { "name": "Rahel Siburian" }
+      {
+        "name": "Ramdhan Alfarisi"
+      },
+      {
+        "name": "Tengku Erlangga"
+      },
+      {
+        "name": "Hilmi"
+      },
+      {
+        "name": "Bagas"
+      },
+      {
+        "name": "Rahel Siburian"
+      }
     ],
-    "reviewer": "April Rustianto, M.Kom",
     "diagrams": [
       {
         "id": 0,
-        "title": "DFD Toko Online - STRIDE Model",
+        "title": "DFD Toko Online - STRIDE",
         "diagramType": "STRIDE",
-        "placeholder": "Data Flow Diagram Toko Online beserta Pemetaan Ancaman STRIDE",
+        "placeholder": "Data Flow Diagram - Aplikasi Manajemen Toko Online",
+        "thumbnail": "./public/content/images/thumbnail.stride.jpg",
         "version": "2.6.2",
         "cells": [
           {
-            "id": "actor-customer",
+            "position": {
+              "x": 20,
+              "y": 20
+            },
+            "size": {
+              "width": 480,
+              "height": 620
+            },
+            "attrs": {
+              "body": {
+                "strokeWidth": 1.5,
+                "strokeDasharray": "6,4",
+                "fill": "none",
+                "stroke": "#333333"
+              },
+              "label": {
+                "text": "Untrusted Zone (Client / Public Internet)",
+                "fontSize": 13,
+                "fill": "#333333"
+              }
+            },
+            "visible": true,
+            "shape": "trust-boundary-box",
+            "zIndex": -1,
+            "id": "2b9408ac-2e37-4d48-aff1-7cecb6b64e7b",
+            "data": {
+              "type": "tm.BoundaryBox",
+              "name": "Untrusted Zone (Client / Public Internet)",
+              "description": "Wilayah di luar kendali penuh sistem: browser customer/admin dan lalu lintas publik internet.",
+              "isTrustBoundary": true,
+              "hasOpenThreats": false,
+              "crossingFlows": [],
+              "containedElements": [
+                "184a278d-d9ef-4cb9-8423-e55be0586baf",
+                "a8918a10-070f-45d6-a10f-73c5fce8d2f5",
+                "2c479213-7fc5-4084-bbb0-4131f5b2d08c"
+              ]
+            }
+          },
+          {
+            "position": {
+              "x": 600,
+              "y": 20
+            },
+            "size": {
+              "width": 560,
+              "height": 460
+            },
+            "attrs": {
+              "body": {
+                "strokeWidth": 1.5,
+                "strokeDasharray": "6,4",
+                "fill": "none",
+                "stroke": "#333333"
+              },
+              "label": {
+                "text": "Trusted Zone (Backend Server / VPC Internal)",
+                "fontSize": 13,
+                "fill": "#333333"
+              }
+            },
+            "visible": true,
+            "shape": "trust-boundary-box",
+            "zIndex": -1,
+            "id": "48ac2851-aa49-4b8a-8b94-673d1c195bfd",
+            "data": {
+              "type": "tm.BoundaryBox",
+              "name": "Trusted Zone (Backend Server / VPC Internal)",
+              "description": "Server backend Node.js beserta database dan cache yang berjalan di jaringan internal/VPC.",
+              "isTrustBoundary": true,
+              "hasOpenThreats": false,
+              "crossingFlows": [],
+              "containedElements": [
+                "2c55dfe8-4cf3-4f27-9c4c-7290bc45d16e",
+                "bf004933-8193-4a68-bab7-7762492da2be",
+                "57320efe-0f50-4469-b7c5-c9b7161cfd32"
+              ]
+            }
+          },
+          {
+            "position": {
+              "x": 600,
+              "y": 800
+            },
+            "size": {
+              "width": 650,
+              "height": 220
+            },
+            "attrs": {
+              "body": {
+                "strokeWidth": 1.5,
+                "strokeDasharray": "6,4",
+                "fill": "none",
+                "stroke": "#333333"
+              },
+              "label": {
+                "text": "External Third-Party Zone",
+                "fontSize": 13,
+                "fill": "#333333"
+              }
+            },
+            "visible": true,
+            "shape": "trust-boundary-box",
+            "zIndex": -1,
+            "id": "6221d65f-1799-4de9-832d-7e53b20a7b51",
+            "data": {
+              "type": "tm.BoundaryBox",
+              "name": "External Third-Party Zone",
+              "description": "Layanan pihak ketiga di luar kendali penuh startup: payment gateway dan email service.",
+              "isTrustBoundary": true,
+              "hasOpenThreats": false,
+              "crossingFlows": [],
+              "containedElements": [
+                "432d6dbd-d4a7-4c58-9e9f-390b4cece812",
+                "00226ea5-e428-440c-8fe9-a6d2e14d9e31"
+              ]
+            }
+          },
+          {
+            "position": {
+              "x": 70,
+              "y": 90
+            },
+            "size": {
+              "width": 150,
+              "height": 70
+            },
+            "attrs": {
+              "text": {
+                "fontSize": 13,
+                "text": "Customer",
+                "fontWeight": "bold"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5,
+                "strokeDasharray": null
+              },
+              "label": {
+                "text": "Customer"
+              }
+            },
+            "visible": true,
             "shape": "actor",
             "zIndex": 1,
-            "position": { "x": 100, "y": 150 },
-            "size": { "width": 120, "height": 60 },
+            "ports": {
+              "groups": {
+                "top": {
+                  "position": "top",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "position": "right",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "bottom": {
+                  "position": "bottom",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "left": {
+                  "position": "left",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                }
+              },
+              "items": [
+                {
+                  "group": "top",
+                  "id": "a22efadf-7e37-40b0-a5bd-7bf2e39a0b04"
+                },
+                {
+                  "group": "right",
+                  "id": "dd984a47-cfc3-4b5e-846f-c21141c485de"
+                },
+                {
+                  "group": "bottom",
+                  "id": "8213fecf-8b16-4f31-9a68-4591c22339be"
+                },
+                {
+                  "group": "left",
+                  "id": "097b8f91-4a90-42b9-85e2-99712285e07f"
+                }
+              ]
+            },
+            "id": "184a278d-d9ef-4cb9-8423-e55be0586baf",
             "data": {
               "type": "tm.Actor",
               "name": "Customer",
-              "description": "Aktor pembeli (Daftar, Login, Pesan, Bayar)",
+              "description": "Pelanggan yang mendaftar, login, memesan produk, dan melakukan pembayaran.",
+              "isTrustBoundary": false,
               "outOfScope": false,
+              "reasonOutOfScope": "",
               "hasOpenThreats": false,
+              "providesAuthentication": false,
               "threats": []
             }
           },
           {
-            "id": "actor-admin",
+            "position": {
+              "x": 70,
+              "y": 500
+            },
+            "size": {
+              "width": 150,
+              "height": 70
+            },
+            "attrs": {
+              "text": {
+                "fontSize": 13,
+                "text": "Admin",
+                "fontWeight": "bold"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5,
+                "strokeDasharray": null
+              },
+              "label": {
+                "text": "Admin"
+              }
+            },
+            "visible": true,
             "shape": "actor",
-            "zIndex": 1,
-            "position": { "x": 100, "y": 300 },
-            "size": { "width": 120, "height": 60 },
+            "zIndex": 2,
+            "ports": {
+              "groups": {
+                "top": {
+                  "position": "top",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "position": "right",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "bottom": {
+                  "position": "bottom",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "left": {
+                  "position": "left",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                }
+              },
+              "items": [
+                {
+                  "group": "top",
+                  "id": "beb53a1b-e4fe-4306-becf-ddd7c4e80da6"
+                },
+                {
+                  "group": "right",
+                  "id": "e39851ff-9b7a-4e2b-8ff2-3d1835210c82"
+                },
+                {
+                  "group": "bottom",
+                  "id": "216daa34-217b-48ab-ab75-1a397d8f78a0"
+                },
+                {
+                  "group": "left",
+                  "id": "6ad8c406-01e3-45e1-b559-aff56e851d0f"
+                }
+              ]
+            },
+            "id": "a8918a10-070f-45d6-a10f-73c5fce8d2f5",
             "data": {
               "type": "tm.Actor",
               "name": "Admin",
-              "description": "Aktor pengelola produk dan toko online",
+              "description": "Staf toko yang mengelola data produk (tambah/ubah/hapus).",
+              "isTrustBoundary": false,
               "outOfScope": false,
+              "reasonOutOfScope": "",
               "hasOpenThreats": false,
+              "providesAuthentication": false,
               "threats": []
             }
           },
           {
-            "id": "actor-payment-gw",
-            "shape": "actor",
-            "zIndex": 1,
-            "position": { "x": 800, "y": 150 },
-            "size": { "width": 140, "height": 60 },
-            "data": {
-              "type": "tm.Actor",
-              "name": "Payment Gateway",
-              "description": "Layanan pihak ketiga (Midtrans / Xendit)",
-              "outOfScope": false,
-              "hasOpenThreats": true,
-              "threats": [
+            "position": {
+              "x": 360,
+              "y": 285
+            },
+            "size": {
+              "width": 110,
+              "height": 110
+            },
+            "attrs": {
+              "text": {
+                "fontSize": 13,
+                "text": "React Frontend",
+                "fontWeight": "bold"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5,
+                "strokeDasharray": null
+              },
+              "label": {
+                "text": "React Frontend"
+              }
+            },
+            "visible": true,
+            "shape": "process",
+            "zIndex": 3,
+            "ports": {
+              "groups": {
+                "top": {
+                  "position": "top",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "position": "right",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "bottom": {
+                  "position": "bottom",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "left": {
+                  "position": "left",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                }
+              },
+              "items": [
                 {
-                  "id": "threat-7",
-                  "title": "Webhook Spoofing (Midtrans/Xendit)",
-                  "status": "Open",
-                  "severity": "High",
-                  "type": "Spoofing",
-                  "description": "Penyerang mengirim panggilan webhook transaksi palsu seolah-olah dari Payment Gateway.",
-                  "mitigation": "Validasi cryptographic signature key dari Payment Gateway dan IP Whitelisting."
+                  "group": "top",
+                  "id": "55c7fdc2-1892-4312-b4a3-d52cac8eb8c2"
+                },
+                {
+                  "group": "right",
+                  "id": "50d86971-43a9-416f-a5f6-29e833f493d7"
+                },
+                {
+                  "group": "bottom",
+                  "id": "6a8ef1f0-7c05-4621-b016-94ebaa59c053"
+                },
+                {
+                  "group": "left",
+                  "id": "0aa43308-c628-4e20-8a4b-ed0c07968926"
                 }
               ]
-            }
-          },
-          {
-            "id": "proc-frontend",
-            "shape": "process",
-            "zIndex": 2,
-            "position": { "x": 320, "y": 200 },
-            "size": { "width": 130, "height": 70 },
+            },
+            "id": "2c479213-7fc5-4084-bbb0-4131f5b2d08c",
             "data": {
               "type": "tm.Process",
               "name": "React Frontend",
-              "description": "Antarmuka pengguna web aplikasi toko online",
+              "description": "Single Page Application (SPA) yang berjalan di browser customer/admin.",
+              "isTrustBoundary": false,
               "outOfScope": false,
-              "hasOpenThreats": true,
-              "threats": [
-                {
-                  "id": "threat-6",
-                  "title": "Bypass Otentikasi / Parameter Tampering",
-                  "status": "Open",
-                  "severity": "High",
-                  "type": "Elevation of Privilege",
-                  "description": "Pengguna biasa mengubah request ID untuk mengakses fitur khusus Admin di UI.",
-                  "mitigation": "Terapkan Role-Based Access Control (RBAC) di sisi API Backend, bukan hanya UI."
-                }
-              ]
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "handlesCardPayment": false,
+              "handlesGoodsOrServices": false,
+              "isWebApplication": false,
+              "privilegeLevel": "",
+              "threats": []
             }
           },
           {
-            "id": "proc-backend-api",
+            "position": {
+              "x": 660,
+              "y": 180
+            },
+            "size": {
+              "width": 110,
+              "height": 110
+            },
+            "attrs": {
+              "text": {
+                "fontSize": 13,
+                "text": "Node.js REST API",
+                "fontWeight": "bold"
+              },
+              "body": {
+                "stroke": "red",
+                "strokeWidth": 2.5,
+                "strokeDasharray": null
+              },
+              "label": {
+                "text": "Node.js REST API"
+              }
+            },
+            "visible": true,
             "shape": "process",
-            "zIndex": 2,
-            "position": { "x": 550, "y": 200 },
-            "size": { "width": 140, "height": 70 },
+            "zIndex": 4,
+            "ports": {
+              "groups": {
+                "top": {
+                  "position": "top",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "position": "right",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "bottom": {
+                  "position": "bottom",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "left": {
+                  "position": "left",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                }
+              },
+              "items": [
+                {
+                  "group": "top",
+                  "id": "2a4387c9-f5ea-45d8-a5f0-a88e29b6e143"
+                },
+                {
+                  "group": "right",
+                  "id": "a58f3dcf-7e07-4fa0-9789-b6d31951c502"
+                },
+                {
+                  "group": "bottom",
+                  "id": "a40525c4-5f2e-40da-99d6-5a21c85f5825"
+                },
+                {
+                  "group": "left",
+                  "id": "643ea4a6-81a5-4bd9-90ef-c7f0c412ff4f"
+                }
+              ]
+            },
+            "id": "2c55dfe8-4cf3-4f27-9c4c-7290bc45d16e",
             "data": {
               "type": "tm.Process",
               "name": "Node.js REST API",
-              "description": "Core Backend Service pengelolaan logika bisnis",
+              "description": "Backend REST API yang menangani autentikasi, order, dan integrasi payment/email.",
+              "isTrustBoundary": false,
               "outOfScope": false,
+              "reasonOutOfScope": "",
               "hasOpenThreats": true,
+              "handlesCardPayment": false,
+              "handlesGoodsOrServices": false,
+              "isWebApplication": true,
+              "privilegeLevel": "",
               "threats": [
                 {
-                  "id": "threat-1",
-                  "title": "Pemalsuan Identitas / Token Forgery",
-                  "status": "Open",
-                  "severity": "High",
-                  "type": "Spoofing",
-                  "description": "Penyerang memalsukan identitas Admin untuk mengelola/mengubah data produk.",
-                  "mitigation": "Gunakan JWT dengan algoritma verifikasi yang kuat (RS256) & expiration token singkat."
-                },
-                {
-                  "id": "threat-5",
-                  "title": "Serangan DoS / Flooding API Requests",
+                  "id": "8a767bc2-4d79-49cc-a985-fe579dbdbb75",
+                  "title": "Denial of Service akibat tidak ada rate limiting",
                   "status": "Open",
                   "severity": "Medium",
                   "type": "Denial of Service",
-                  "description": "Penyerang mengirim request berlebih untuk membuat API server crash.",
-                  "mitigation": "Terapkan Rate Limiting (misal: max 100 req/menit per IP) menggunakan express-rate-limit."
-                }
-              ]
-            }
-          },
-          {
-            "id": "proc-email-service",
-            "shape": "process",
-            "zIndex": 2,
-            "position": { "x": 550, "y": 400 },
-            "size": { "width": 130, "height": 60 },
-            "data": {
-              "type": "tm.Process",
-              "name": "Email Service",
-              "description": "Layanan pengiriman email konfirmasi / notifikasi",
-              "outOfScope": false,
-              "hasOpenThreats": true,
-              "threats": [
+                  "description": "Endpoint publik seperti login, register, dan search dapat dibanjiri request (flooding/DDoS) sehingga layanan tidak tersedia bagi pengguna sah.",
+                  "mitigation": "Terapkan rate limiting (mis. express-rate-limit), gunakan WAF/CDN (Cloudflare), dan auto-scaling pada infrastruktur.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 4,
+                  "score": ""
+                },
                 {
-                  "id": "threat-8",
-                  "title": "Ekspos Data Sensitive via Plain Email",
+                  "id": "a223dfa4-b4f5-4cd9-ae0b-0aea4b5fff8b",
+                  "title": "Broken access control pada endpoint admin",
                   "status": "Open",
-                  "severity": "Medium",
-                  "type": "Information Disclosure",
-                  "description": "Kredensial atau token reset password terkirim tanpa enkripsi aman.",
-                  "mitigation": "Gunakan TLS/STARTTLS untuk koneksi SMTP dan token reset berspesifikasi short-lived expiry."
+                  "severity": "High",
+                  "type": "Elevation of Privilege",
+                  "description": "Jika otorisasi berbasis role tidak diverifikasi dengan benar di setiap endpoint, customer biasa berpotensi mengakses endpoint kelola produk yang seharusnya hanya untuk Admin.",
+                  "mitigation": "Terapkan role-based access control (RBAC) di middleware pada setiap endpoint sensitif, verifikasi role dari JWT claim di server, jangan percaya role dari client.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 5,
+                  "score": ""
                 }
               ]
             }
           },
           {
-            "id": "store-mysql",
+            "position": {
+              "x": 980,
+              "y": 60
+            },
+            "size": {
+              "width": 160,
+              "height": 70
+            },
+            "attrs": {
+              "text": {
+                "fontSize": 13,
+                "text": "MySQL DB",
+                "fontWeight": "bold"
+              },
+              "topLine": {
+                "strokeWidth": 1.5,
+                "strokeDasharray": null
+              },
+              "bottomLine": {
+                "strokeWidth": 1.5,
+                "strokeDasharray": null
+              },
+              "label": {
+                "text": "MySQL DB"
+              }
+            },
+            "visible": true,
             "shape": "store",
-            "zIndex": 2,
-            "position": { "x": 800, "y": 300 },
-            "size": { "width": 130, "height": 60 },
+            "zIndex": 5,
+            "ports": {
+              "groups": {
+                "top": {
+                  "position": "top",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "position": "right",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "bottom": {
+                  "position": "bottom",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "left": {
+                  "position": "left",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                }
+              },
+              "items": [
+                {
+                  "group": "top",
+                  "id": "7d5c4858-3d5f-4499-af9d-a07fc1bd1c09"
+                },
+                {
+                  "group": "right",
+                  "id": "a8b2ee73-e178-4103-a5ef-f2573ef2da86"
+                },
+                {
+                  "group": "bottom",
+                  "id": "daeb00ee-991c-48d6-bad4-e1601d1690b4"
+                },
+                {
+                  "group": "left",
+                  "id": "9ab5d55c-336c-4c23-b4d3-a6a7dd30275d"
+                }
+              ]
+            },
+            "id": "bf004933-8193-4a68-bab7-7762492da2be",
             "data": {
               "type": "tm.Store",
               "name": "MySQL DB",
-              "description": "Database utama penyimpanan transaksi dan produk",
+              "description": "Menyimpan data user, produk, order, dan transaksi.",
+              "isTrustBoundary": false,
               "outOfScope": false,
+              "reasonOutOfScope": "",
               "hasOpenThreats": true,
+              "isALog": false,
+              "isEncrypted": false,
+              "isSigned": false,
+              "storesCredentials": true,
+              "storesInventory": false,
               "threats": [
                 {
-                  "id": "threat-4",
-                  "title": "Kebocoran Data Sensitif Pelanggan",
-                  "status": "Open",
-                  "severity": "High",
-                  "type": "Information Disclosure",
-                  "description": "Akses tak sah ke DB mengakibatkan terungkapnya password & riwayat pelanggan.",
-                  "mitigation": "Enkripsi data-at-rest dan enkripsi password menggunakan hash bcrypt / Argon2."
-                }
-              ]
-            }
-          },
-          {
-            "id": "store-redis",
-            "shape": "store",
-            "zIndex": 2,
-            "position": { "x": 800, "y": 400 },
-            "size": { "width": 130, "height": 60 },
-            "data": {
-              "type": "tm.Store",
-              "name": "Redis Cache",
-              "description": "Penyimpanan cache session dan token sementara",
-              "outOfScope": false,
-              "hasOpenThreats": false,
-              "threats": []
-            }
-          },
-          {
-            "id": "flow-1",
-            "shape": "flow",
-            "zIndex": 10,
-            "source": { "x": 220, "y": 180 },
-            "target": { "x": 320, "y": 235 },
-            "labels": ["HTTPS Request"],
-            "data": {
-              "type": "tm.Flow",
-              "name": "Customer to React Frontend",
-              "description": "Aktivitas login, daftar, pesan, bayar",
-              "hasOpenThreats": false,
-              "threats": []
-            }
-          },
-          {
-            "id": "flow-2",
-            "shape": "flow",
-            "zIndex": 10,
-            "source": { "x": 450, "y": 235 },
-            "target": { "x": 550, "y": 235 },
-            "labels": ["REST API / JSON"],
-            "data": {
-              "type": "tm.Flow",
-              "name": "React Frontend to REST API",
-              "description": "Komunikasi data antar frontend dan backend",
-              "hasOpenThreats": true,
-              "threats": [
-                {
-                  "id": "threat-2",
-                  "title": "Man-In-The-Middle (MitM) Tampering",
+                  "id": "06d486a2-65e8-4a50-a98a-9b1aa5110b14",
+                  "title": "SQL Injection pada query API",
                   "status": "Open",
                   "severity": "High",
                   "type": "Tampering",
-                  "description": "Mencegat dan mengubah harga/payload pesanan saat transit.",
-                  "mitigation": "Wajib menggunakan protokol HTTPS dengan Enkripsi TLS 1.3."
+                  "description": "Input dari user (form login, pencarian produk, checkout) tidak divalidasi/disanitasi sebelum dibangun menjadi query SQL, memungkinkan penyerang menyisipkan perintah SQL berbahaya.",
+                  "mitigation": "Gunakan parameterized query / prepared statement (mis. Sequelize/Knex), lakukan input validation, dan terapkan least-privilege DB user.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 1,
+                  "score": ""
+                },
+                {
+                  "id": "481dc7b2-d64d-4dd6-9c20-c341c574bdb8",
+                  "title": "Kebocoran data pelanggan (PII) dari database",
+                  "status": "Open",
+                  "severity": "High",
+                  "type": "Information Disclosure",
+                  "description": "Data pribadi pelanggan (nama, alamat, histori transaksi, hash password) dapat bocor jika database tidak dienkripsi saat disimpan (at-rest) dan backup tidak diamankan.",
+                  "mitigation": "Aktifkan enkripsi at-rest (TDE), enkripsi kolom sensitif, batasi akses jaringan DB hanya dari backend server, dan enkripsi file backup.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 2,
+                  "score": ""
                 }
               ]
             }
           },
           {
-            "id": "flow-3",
-            "shape": "flow",
-            "zIndex": 10,
-            "source": { "x": 690, "y": 235 },
-            "target": { "x": 800, "y": 180 },
-            "labels": ["Payment API"],
+            "position": {
+              "x": 980,
+              "y": 360
+            },
+            "size": {
+              "width": 160,
+              "height": 70
+            },
+            "attrs": {
+              "text": {
+                "fontSize": 13,
+                "text": "Redis Cache",
+                "fontWeight": "bold"
+              },
+              "topLine": {
+                "strokeWidth": 1.5,
+                "strokeDasharray": null
+              },
+              "bottomLine": {
+                "strokeWidth": 1.5,
+                "strokeDasharray": null
+              },
+              "label": {
+                "text": "Redis Cache"
+              }
+            },
+            "visible": true,
+            "shape": "store",
+            "zIndex": 6,
+            "ports": {
+              "groups": {
+                "top": {
+                  "position": "top",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "position": "right",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "bottom": {
+                  "position": "bottom",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "left": {
+                  "position": "left",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                }
+              },
+              "items": [
+                {
+                  "group": "top",
+                  "id": "67f9f793-0d52-4742-b3c9-4f734f10cbab"
+                },
+                {
+                  "group": "right",
+                  "id": "7facfedf-2c59-4dc8-97fa-ba6a88aa6f3c"
+                },
+                {
+                  "group": "bottom",
+                  "id": "fcee2a72-720b-4268-a00f-ed50e8cb54fb"
+                },
+                {
+                  "group": "left",
+                  "id": "e73ba61a-ee10-434b-b2ca-26a79e1df56c"
+                }
+              ]
+            },
+            "id": "57320efe-0f50-4469-b7c5-c9b7161cfd32",
             "data": {
-              "type": "tm.Flow",
-              "name": "REST API to Payment Gateway",
-              "description": "Penyampaian tagihan & konfirmasi pembayaran",
+              "type": "tm.Store",
+              "name": "Redis Cache",
+              "description": "Menyimpan session dan cache data produk untuk mempercepat respons.",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
               "hasOpenThreats": true,
+              "isALog": false,
+              "isEncrypted": false,
+              "isSigned": false,
+              "storesCredentials": true,
+              "storesInventory": false,
               "threats": [
                 {
-                  "id": "threat-3",
-                  "title": "Penolakan Transaksi / Repudiation",
+                  "id": "26304d5e-5203-4055-ac11-ab791d5e6b86",
+                  "title": "Akses Redis tanpa autentikasi",
                   "status": "Open",
                   "severity": "Medium",
-                  "type": "Repudiation",
-                  "description": "Pengguna menyangkal telah melakukan transaksi pembayaran.",
-                  "mitigation": "Implementasikan logging audit terpusat yang mencatat IP, timestamp, dan payload webhook."
+                  "type": "Information Disclosure",
+                  "description": "Jika instance Redis tidak diberi password/ACL dan terekspos ke jaringan yang lebih luas, pihak tidak berwenang dapat membaca session token atau data cache pelanggan.",
+                  "mitigation": "Aktifkan requirepass/ACL pada Redis, bind ke localhost/private network saja, dan gunakan TLS untuk koneksi ke Redis jika tersedia.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 3,
+                  "score": ""
                 }
               ]
             }
+          },
+          {
+            "position": {
+              "x": 650,
+              "y": 880
+            },
+            "size": {
+              "width": 190,
+              "height": 70
+            },
+            "attrs": {
+              "text": {
+                "fontSize": 13,
+                "text": "Payment Gateway (Midtrans/Xendit)",
+                "fontWeight": "bold"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5,
+                "strokeDasharray": null
+              },
+              "label": {
+                "text": "Payment Gateway (Midtrans/Xendit)"
+              }
+            },
+            "visible": true,
+            "shape": "actor",
+            "zIndex": 7,
+            "ports": {
+              "groups": {
+                "top": {
+                  "position": "top",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "position": "right",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "bottom": {
+                  "position": "bottom",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "left": {
+                  "position": "left",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                }
+              },
+              "items": [
+                {
+                  "group": "top",
+                  "id": "1faaf47c-e267-4e0b-9545-dc4f07c618a7"
+                },
+                {
+                  "group": "right",
+                  "id": "5c2b9af1-af95-4535-9933-598a0622d41b"
+                },
+                {
+                  "group": "bottom",
+                  "id": "34cf8410-642d-42e7-9fef-2171db519103"
+                },
+                {
+                  "group": "left",
+                  "id": "166725ac-b16f-4f04-8a83-5b1697ac842a"
+                }
+              ]
+            },
+            "id": "432d6dbd-d4a7-4c58-9e9f-390b4cece812",
+            "data": {
+              "type": "tm.Actor",
+              "name": "Payment Gateway (Midtrans/Xendit)",
+              "description": "Layanan pihak ketiga yang memproses pembayaran customer.",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "providesAuthentication": false,
+              "threats": []
+            }
+          },
+          {
+            "position": {
+              "x": 1030,
+              "y": 880
+            },
+            "size": {
+              "width": 180,
+              "height": 70
+            },
+            "attrs": {
+              "text": {
+                "fontSize": 13,
+                "text": "Email Service",
+                "fontWeight": "bold"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5,
+                "strokeDasharray": null
+              },
+              "label": {
+                "text": "Email Service"
+              }
+            },
+            "visible": true,
+            "shape": "actor",
+            "zIndex": 8,
+            "ports": {
+              "groups": {
+                "top": {
+                  "position": "top",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "position": "right",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "bottom": {
+                  "position": "bottom",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                },
+                "left": {
+                  "position": "left",
+                  "attrs": {
+                    "circle": {
+                      "r": 4,
+                      "magnet": true,
+                      "stroke": "#5F95FF",
+                      "strokeWidth": 1,
+                      "fill": "#fff",
+                      "style": {
+                        "visibility": "hidden"
+                      }
+                    }
+                  }
+                }
+              },
+              "items": [
+                {
+                  "group": "top",
+                  "id": "96c4d2eb-7a47-4812-9cf8-0b1dd384a739"
+                },
+                {
+                  "group": "right",
+                  "id": "3d928452-0069-4518-aff9-77850390ab58"
+                },
+                {
+                  "group": "bottom",
+                  "id": "53097ef4-07c7-4c9d-86fe-7e228a696816"
+                },
+                {
+                  "group": "left",
+                  "id": "d4f524c3-844e-4ca6-a4de-ced2cea72ba4"
+                }
+              ]
+            },
+            "id": "00226ea5-e428-440c-8fe9-a6d2e14d9e31",
+            "data": {
+              "type": "tm.Actor",
+              "name": "Email Service",
+              "description": "Layanan pihak ketiga (mis. SendGrid/SMTP) untuk mengirim notifikasi email.",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "providesAuthentication": false,
+              "threats": []
+            }
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "red",
+                "strokeWidth": 2.5,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 9,
+            "connector": "normal",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Login/Register/Order Request",
+              "description": "Customer mengirim request login, register, browsing, dan checkout dari browser.",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": true,
+              "isBidirectional": false,
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "protocol": "HTTPS",
+              "threats": [
+                {
+                  "id": "6fdada50-6da0-4c82-a3a0-e67c79d8d996",
+                  "title": "Credential stuffing / brute force login",
+                  "status": "Open",
+                  "severity": "High",
+                  "type": "Spoofing",
+                  "description": "Penyerang mencoba banyak kombinasi username/password (bot/otomatis) untuk login sebagai customer lain menggunakan kredensial hasil kebocoran data situs lain.",
+                  "mitigation": "Terapkan rate limiting & account lockout, CAPTCHA setelah beberapa kali gagal, dan dorong penggunaan MFA.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 6,
+                  "score": ""
+                }
+              ],
+              "trustBoundaryIds": [],
+              "threatFrequency": {}
+            },
+            "labels": [
+              "Login/Register/Order Request"
+            ],
+            "id": "95e25657-32fa-44e8-974f-c692c34753bd",
+            "source": {
+              "x": 220,
+              "y": 145
+            },
+            "target": {
+              "x": 360,
+              "y": 305
+            }
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "normal",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Manage Product Request",
+              "description": "Admin mengirim request untuk menambah/mengubah/menghapus produk.",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "protocol": "HTTPS",
+              "threats": [],
+              "trustBoundaryIds": [],
+              "threatFrequency": {}
+            },
+            "labels": [
+              "Manage Product Request"
+            ],
+            "id": "24277367-88f5-4d90-919d-d9ef29818f16",
+            "source": {
+              "x": 220,
+              "y": 535
+            },
+            "target": {
+              "x": 360,
+              "y": 355
+            }
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "red",
+                "strokeWidth": 2.5,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 11,
+            "connector": "normal",
+            "data": {
+              "type": "tm.Flow",
+              "name": "API Request (JWT Auth)",
+              "description": "Frontend memanggil REST API backend dengan menyertakan JWT pada header Authorization.",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": true,
+              "isBidirectional": false,
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "protocol": "HTTPS/REST",
+              "threats": [
+                {
+                  "id": "3f99dd3b-43e4-45ef-b108-47ad116ac794",
+                  "title": "Parameter tampering pada request API",
+                  "status": "Open",
+                  "severity": "Medium",
+                  "type": "Tampering",
+                  "description": "Tanpa validasi input yang ketat di sisi server, penyerang dapat memodifikasi parameter request (mis. mengubah price/quantity/order id) sebelum dikirim ke API.",
+                  "mitigation": "Lakukan validasi & sanitasi input di server (whitelist), jangan percaya harga/kuantitas dari client, hitung ulang total di backend.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 7,
+                  "score": ""
+                },
+                {
+                  "id": "1a09b258-142d-48bd-8de7-9a5133a9706b",
+                  "title": "Pencurian JWT token melalui XSS",
+                  "status": "Open",
+                  "severity": "High",
+                  "type": "Information Disclosure",
+                  "description": "Jika JWT disimpan di localStorage dan aplikasi rentan Cross-Site Scripting, penyerang dapat mencuri token dan membajak sesi pengguna.",
+                  "mitigation": "Simpan token di httpOnly secure cookie, terapkan Content Security Policy (CSP), dan sanitasi semua output yang berasal dari input user.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 8,
+                  "score": ""
+                }
+              ],
+              "trustBoundaryIds": [],
+              "threatFrequency": {}
+            },
+            "labels": [
+              "API Request (JWT Auth)"
+            ],
+            "id": "7a76a738-2cc2-4c5a-a8b9-c5e128e81068",
+            "source": {
+              "x": 470,
+              "y": 310
+            },
+            "target": {
+              "x": 660,
+              "y": 215
+            }
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 12,
+            "connector": "normal",
+            "data": {
+              "type": "tm.Flow",
+              "name": "API Response (JSON)",
+              "description": "API mengirim balik data JSON (produk, status order, dsb.) ke frontend.",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "protocol": "HTTPS/REST",
+              "threats": [],
+              "trustBoundaryIds": [],
+              "threatFrequency": {}
+            },
+            "labels": [
+              "API Response (JSON)"
+            ],
+            "id": "ea0781aa-0f93-4002-a700-0acd5d8ef46e",
+            "source": {
+              "x": 660,
+              "y": 265
+            },
+            "target": {
+              "x": 470,
+              "y": 355
+            }
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 13,
+            "connector": "normal",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Query/Store Data",
+              "description": "API melakukan query dan menyimpan data user, produk, dan order ke MySQL.",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "protocol": "SQL/TLS",
+              "threats": [],
+              "trustBoundaryIds": [],
+              "threatFrequency": {}
+            },
+            "labels": [
+              "Query/Store Data"
+            ],
+            "id": "864fb342-93ef-4e47-af78-86b2576e1174",
+            "source": {
+              "x": 770,
+              "y": 210
+            },
+            "target": {
+              "x": 980,
+              "y": 110
+            }
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 14,
+            "connector": "normal",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Cache Read/Write",
+              "description": "API membaca/menulis session dan cache data produk ke Redis.",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": false,
+              "isPublicNetwork": false,
+              "protocol": "Redis Protocol",
+              "threats": [],
+              "trustBoundaryIds": [],
+              "threatFrequency": {}
+            },
+            "labels": [
+              "Cache Read/Write"
+            ],
+            "id": "228a1bf4-6a0c-4cf0-9220-e6a34d2ec42f",
+            "source": {
+              "x": 770,
+              "y": 260
+            },
+            "target": {
+              "x": 980,
+              "y": 400
+            }
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "red",
+                "strokeWidth": 2.5,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 15,
+            "connector": "normal",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Payment Request",
+              "description": "API mengirim request pembuatan transaksi pembayaran ke payment gateway.",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": true,
+              "isBidirectional": false,
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "protocol": "HTTPS/REST API",
+              "threats": [
+                {
+                  "id": "a9e92b01-d1e0-4ebf-806c-4b1fb3138d98",
+                  "title": "Kurangnya audit log pada transaksi pembayaran",
+                  "status": "Open",
+                  "severity": "Medium",
+                  "type": "Repudiation",
+                  "description": "Jika request pembayaran ke payment gateway tidak dicatat secara lengkap (siapa, kapan, jumlah, status), customer dapat menyangkal telah/tidak melakukan pembayaran dan tim tidak bisa membuktikan sebaliknya.",
+                  "mitigation": "Terapkan audit logging terpusat (siapa/apa/kapan) untuk setiap transaksi, simpan log secara immutable/append-only, dan sertakan transaction ID unik yang dikonfirmasi ke customer.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 9,
+                  "score": ""
+                }
+              ],
+              "trustBoundaryIds": [],
+              "threatFrequency": {}
+            },
+            "labels": [
+              "Payment Request"
+            ],
+            "id": "43bc1bde-7899-4e7c-b29d-e3927d84082c",
+            "source": {
+              "x": 700,
+              "y": 290
+            },
+            "target": {
+              "x": 720,
+              "y": 880
+            },
+            "vertices": [
+              {
+                "x": 700,
+                "y": 620
+              }
+            ]
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "red",
+                "strokeWidth": 2.5,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 16,
+            "connector": "normal",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Payment Callback/Webhook",
+              "description": "Payment gateway mengirim notifikasi status pembayaran (webhook) kembali ke API.",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": true,
+              "isBidirectional": false,
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "protocol": "HTTPS Webhook",
+              "threats": [
+                {
+                  "id": "cb93124b-7ca8-447b-92cc-769acb4ce749",
+                  "title": "Webhook callback pembayaran dipalsukan",
+                  "status": "Open",
+                  "severity": "High",
+                  "type": "Spoofing",
+                  "description": "Jika endpoint callback/webhook dari Midtrans/Xendit tidak memverifikasi signature, penyerang dapat mengirim payload palsu yang mengklaim pembayaran berhasil tanpa pembayaran nyata.",
+                  "mitigation": "Verifikasi signature/HMAC pada setiap webhook sesuai dokumentasi Midtrans/Xendit, gunakan HTTPS, dan validasi ulang status transaksi langsung ke API payment gateway (server-to-server) sebelum mengubah status order.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 10,
+                  "score": ""
+                }
+              ],
+              "trustBoundaryIds": [],
+              "threatFrequency": {}
+            },
+            "labels": [
+              "Payment Callback/Webhook"
+            ],
+            "id": "ce9b8cc4-dfd9-4a78-bea4-8c6d1c0134d1",
+            "source": {
+              "x": 840,
+              "y": 880
+            },
+            "target": {
+              "x": 760,
+              "y": 290
+            },
+            "vertices": [
+              {
+                "x": 890,
+                "y": 690
+              },
+              {
+                "x": 780,
+                "y": 340
+              }
+            ]
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 17,
+            "connector": "normal",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Send Email Notification",
+              "description": "API mengirim notifikasi (konfirmasi order, reset password) melalui Email Service.",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "protocol": "SMTP/API",
+              "threats": [],
+              "trustBoundaryIds": [],
+              "threatFrequency": {}
+            },
+            "labels": [
+              "Send Email Notification"
+            ],
+            "id": "975509e5-4af5-4b94-9f06-3ee90fd8b3f4",
+            "source": {
+              "x": 770,
+              "y": 280
+            },
+            "target": {
+              "x": 1120,
+              "y": 880
+            },
+            "vertices": [
+              {
+                "x": 1160,
+                "y": 730
+              }
+            ]
           }
         ]
       }
-    ]
+    ],
+    "diagramTop": 1,
+    "reviewer": "April Rustianto, S.Kom., M.T., CCIE",
+    "threatTop": 11
   }
 }
