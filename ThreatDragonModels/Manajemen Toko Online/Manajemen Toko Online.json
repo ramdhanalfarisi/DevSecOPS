@@ -26,58 +26,68 @@
         "version": "2.6.2",
         "cells": [
           {
-            "type": "tm.Boundary",
-            "size": { "width": 200, "height": 380 },
-            "position": { "x": 50, "y": 80 },
-            "angle": 0,
-            "id": "boundary-public",
-            "zIndex": 1,
-            "attrs": {
-              "text": { "text": "Public Zone (Internet)" }
-            },
-            "data": { "name": "Public Zone", "isTrustBoundary": true }
-          },
-          {
-            "type": "tm.Boundary",
-            "size": { "width": 680, "height": 380 },
-            "position": { "x": 280, "y": 80 },
-            "angle": 0,
-            "id": "boundary-internal",
-            "zIndex": 1,
-            "attrs": {
-              "text": { "text": "Internal Application Zone" }
-            },
-            "data": { "name": "Internal Zone", "isTrustBoundary": true }
-          },
-          {
-            "type": "tm.Actor",
-            "size": { "width": 120, "height": 60 },
-            "position": { "x": 80, "y": 130 },
-            "angle": 0,
             "id": "actor-customer",
-            "zIndex": 2,
-            "attrs": { "text": { "text": "Customer" } },
-            "data": { "name": "Customer", "description": "Aktor pembeli (Daftar, Login, Pesan, Bayar)", "outOfScope": false, "hasOpenThreats": false, "threats": [] }
-          },
-          {
-            "type": "tm.Actor",
+            "shape": "actor",
+            "zIndex": 1,
+            "position": { "x": 100, "y": 150 },
             "size": { "width": 120, "height": 60 },
-            "position": { "x": 80, "y": 320 },
-            "angle": 0,
-            "id": "actor-admin",
-            "zIndex": 2,
-            "attrs": { "text": { "text": "Admin" } },
-            "data": { "name": "Admin", "description": "Aktor pengelola produk dan toko online", "outOfScope": false, "hasOpenThreats": false, "threats": [] }
+            "data": {
+              "type": "tm.Actor",
+              "name": "Customer",
+              "description": "Aktor pembeli (Daftar, Login, Pesan, Bayar)",
+              "outOfScope": false,
+              "hasOpenThreats": false,
+              "threats": []
+            }
           },
           {
-            "type": "tm.Process",
-            "size": { "width": 130, "height": 70 },
-            "position": { "x": 320, "y": 220 },
-            "angle": 0,
-            "id": "proc-frontend",
-            "zIndex": 2,
-            "attrs": { "text": { "text": "React Frontend" } },
+            "id": "actor-admin",
+            "shape": "actor",
+            "zIndex": 1,
+            "position": { "x": 100, "y": 300 },
+            "size": { "width": 120, "height": 60 },
             "data": {
+              "type": "tm.Actor",
+              "name": "Admin",
+              "description": "Aktor pengelola produk dan toko online",
+              "outOfScope": false,
+              "hasOpenThreats": false,
+              "threats": []
+            }
+          },
+          {
+            "id": "actor-payment-gw",
+            "shape": "actor",
+            "zIndex": 1,
+            "position": { "x": 800, "y": 150 },
+            "size": { "width": 140, "height": 60 },
+            "data": {
+              "type": "tm.Actor",
+              "name": "Payment Gateway",
+              "description": "Layanan pihak ketiga (Midtrans / Xendit)",
+              "outOfScope": false,
+              "hasOpenThreats": true,
+              "threats": [
+                {
+                  "id": "threat-7",
+                  "title": "Webhook Spoofing (Midtrans/Xendit)",
+                  "status": "Open",
+                  "severity": "High",
+                  "type": "Spoofing",
+                  "description": "Penyerang mengirim panggilan webhook transaksi palsu seolah-olah dari Payment Gateway.",
+                  "mitigation": "Validasi cryptographic signature key dari Payment Gateway dan IP Whitelisting."
+                }
+              ]
+            }
+          },
+          {
+            "id": "proc-frontend",
+            "shape": "process",
+            "zIndex": 2,
+            "position": { "x": 320, "y": 200 },
+            "size": { "width": 130, "height": 70 },
+            "data": {
+              "type": "tm.Process",
               "name": "React Frontend",
               "description": "Antarmuka pengguna web aplikasi toko online",
               "outOfScope": false,
@@ -96,14 +106,13 @@
             }
           },
           {
-            "type": "tm.Process",
-            "size": { "width": 140, "height": 70 },
-            "position": { "x": 520, "y": 220 },
-            "angle": 0,
             "id": "proc-backend-api",
+            "shape": "process",
             "zIndex": 2,
-            "attrs": { "text": { "text": "Node.js REST API" } },
+            "position": { "x": 550, "y": 200 },
+            "size": { "width": 140, "height": 70 },
             "data": {
+              "type": "tm.Process",
               "name": "Node.js REST API",
               "description": "Core Backend Service pengelolaan logika bisnis",
               "outOfScope": false,
@@ -131,40 +140,13 @@
             }
           },
           {
-            "type": "tm.Actor",
-            "size": { "width": 140, "height": 60 },
-            "position": { "x": 780, "y": 110 },
-            "angle": 0,
-            "id": "actor-payment-gw",
-            "zIndex": 2,
-            "attrs": { "text": { "text": "Payment Gateway" } },
-            "data": {
-              "name": "Payment Gateway",
-              "description": "Layanan pihak ketiga (Midtrans / Xendit)",
-              "outOfScope": false,
-              "hasOpenThreats": true,
-              "threats": [
-                {
-                  "id": "threat-7",
-                  "title": "Webhook Spoofing (Midtrans/Xendit)",
-                  "status": "Open",
-                  "severity": "High",
-                  "type": "Spoofing",
-                  "description": "Penyerang mengirim panggilan webhook transaksi palsu seolah-olah dari Payment Gateway.",
-                  "mitigation": "Validasi cryptographic signature key dari Payment Gateway dan IP Whitelisting."
-                }
-              ]
-            }
-          },
-          {
-            "type": "tm.Process",
-            "size": { "width": 130, "height": 60 },
-            "position": { "x": 520, "y": 360 },
-            "angle": 0,
             "id": "proc-email-service",
+            "shape": "process",
             "zIndex": 2,
-            "attrs": { "text": { "text": "Email Service" } },
+            "position": { "x": 550, "y": 400 },
+            "size": { "width": 130, "height": 60 },
             "data": {
+              "type": "tm.Process",
               "name": "Email Service",
               "description": "Layanan pengiriman email konfirmasi / notifikasi",
               "outOfScope": false,
@@ -183,14 +165,13 @@
             }
           },
           {
-            "type": "tm.Store",
-            "size": { "width": 130, "height": 60 },
-            "position": { "x": 780, "y": 220 },
-            "angle": 0,
             "id": "store-mysql",
+            "shape": "store",
             "zIndex": 2,
-            "attrs": { "text": { "text": "MySQL DB" } },
+            "position": { "x": 800, "y": 300 },
+            "size": { "width": 130, "height": 60 },
             "data": {
+              "type": "tm.Store",
               "name": "MySQL DB",
               "description": "Database utama penyimpanan transaksi dan produk",
               "outOfScope": false,
@@ -209,41 +190,44 @@
             }
           },
           {
-            "type": "tm.Store",
-            "size": { "width": 130, "height": 60 },
-            "position": { "x": 780, "y": 330 },
-            "angle": 0,
             "id": "store-redis",
+            "shape": "store",
             "zIndex": 2,
-            "attrs": { "text": { "text": "Redis Cache" } },
-            "data": { "name": "Redis Cache", "description": "Penyimpanan cache session dan token sementara", "outOfScope": false, "hasOpenThreats": false, "threats": [] }
-          },
-          {
-            "type": "tm.Flow",
-            "source": { "id": "actor-customer" },
-            "target": { "id": "proc-frontend" },
-            "id": "flow-customer-fe",
-            "zIndex": 10,
-            "labels": [{ "attrs": { "text": { "text": "HTTPS Request" } } }],
-            "data": { "name": "Customer to React Frontend", "description": "Aktivitas login, daftar, pesan, bayar", "hasOpenThreats": false, "threats": [] }
-          },
-          {
-            "type": "tm.Flow",
-            "source": { "id": "actor-admin" },
-            "target": { "id": "proc-frontend" },
-            "id": "flow-admin-fe",
-            "zIndex": 10,
-            "labels": [{ "attrs": { "text": { "text": "Admin Dashboard Request" } } }],
-            "data": { "name": "Admin to React Frontend", "description": "Aktivitas kelola produk dan stok", "hasOpenThreats": false, "threats": [] }
-          },
-          {
-            "type": "tm.Flow",
-            "source": { "id": "proc-frontend" },
-            "target": { "id": "proc-backend-api" },
-            "id": "flow-fe-api",
-            "zIndex": 10,
-            "labels": [{ "attrs": { "text": { "text": "REST API / JSON" } } }],
+            "position": { "x": 800, "y": 400 },
+            "size": { "width": 130, "height": 60 },
             "data": {
+              "type": "tm.Store",
+              "name": "Redis Cache",
+              "description": "Penyimpanan cache session dan token sementara",
+              "outOfScope": false,
+              "hasOpenThreats": false,
+              "threats": []
+            }
+          },
+          {
+            "id": "flow-1",
+            "shape": "flow",
+            "zIndex": 10,
+            "source": { "x": 220, "y": 180 },
+            "target": { "x": 320, "y": 235 },
+            "labels": ["HTTPS Request"],
+            "data": {
+              "type": "tm.Flow",
+              "name": "Customer to React Frontend",
+              "description": "Aktivitas login, daftar, pesan, bayar",
+              "hasOpenThreats": false,
+              "threats": []
+            }
+          },
+          {
+            "id": "flow-2",
+            "shape": "flow",
+            "zIndex": 10,
+            "source": { "x": 450, "y": 235 },
+            "target": { "x": 550, "y": 235 },
+            "labels": ["REST API / JSON"],
+            "data": {
+              "type": "tm.Flow",
               "name": "React Frontend to REST API",
               "description": "Komunikasi data antar frontend dan backend",
               "hasOpenThreats": true,
@@ -261,40 +245,14 @@
             }
           },
           {
-            "type": "tm.Flow",
-            "source": { "id": "proc-backend-api" },
-            "target": { "id": "store-mysql" },
-            "id": "flow-api-mysql",
+            "id": "flow-3",
+            "shape": "flow",
             "zIndex": 10,
-            "labels": [{ "attrs": { "text": { "text": "SQL Query" } } }],
-            "data": { "name": "REST API to MySQL DB", "description": "Simpan/Ambil data transaksi & produk", "hasOpenThreats": false, "threats": [] }
-          },
-          {
-            "type": "tm.Flow",
-            "source": { "id": "proc-backend-api" },
-            "target": { "id": "store-redis" },
-            "id": "flow-api-redis",
-            "zIndex": 10,
-            "labels": [{ "attrs": { "text": { "text": "Cache Query" } } }],
-            "data": { "name": "REST API to Redis Cache", "description": "Simpan/Ambil data session sementara", "hasOpenThreats": false, "threats": [] }
-          },
-          {
-            "type": "tm.Flow",
-            "source": { "id": "proc-backend-api" },
-            "target": { "id": "proc-email-service" },
-            "id": "flow-api-email",
-            "zIndex": 10,
-            "labels": [{ "attrs": { "text": { "text": "SMTP / Email" } } }],
-            "data": { "name": "REST API to Email Service", "description": "Trigger kirim email notifikasi", "hasOpenThreats": false, "threats": [] }
-          },
-          {
-            "type": "tm.Flow",
-            "source": { "id": "proc-backend-api" },
-            "target": { "id": "actor-payment-gw" },
-            "id": "flow-api-pg",
-            "zIndex": 10,
-            "labels": [{ "attrs": { "text": { "text": "Payment API" } } }],
+            "source": { "x": 690, "y": 235 },
+            "target": { "x": 800, "y": 180 },
+            "labels": ["Payment API"],
             "data": {
+              "type": "tm.Flow",
               "name": "REST API to Payment Gateway",
               "description": "Penyampaian tagihan & konfirmasi pembayaran",
               "hasOpenThreats": true,
